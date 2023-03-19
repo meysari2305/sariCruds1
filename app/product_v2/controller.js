@@ -60,19 +60,23 @@ const updateUser = async (req, res) => {
     const target = path.join(__dirname, '../../uploads', image.originalname);
     fs.renameSync(image.path, target);
     try {
-      const response = await Product.sync();
-      const result = await Product.update({
-        where: {
-          id: req.params.id,
+      await Product.sync();
+      const result = await Product.update(
+        {
+          users_id,
+          name,
+          price,
+          stock,
+          status,
+          image_url: `http://localhost:3000/public/${image.originalname}`,
         },
-        users_id,
-        name,
-        price,
-        stock,
-        status,
-        image_url: `http://localhost:3000/public/${image.originalname}`,
-      });
-      res.send(result, response);
+        {
+          where: {
+            id: req.params.id,
+          },
+        }
+      );
+      res.send(result);
     } catch (error) {
       res.send(error);
     }
